@@ -94,11 +94,11 @@ class TwinUSB:
         # FirstID is the joystick id that is in the first byte of the
         # buffer, either 1 or 2. If it's anything else then something
         # went wrong.
-	firstID = ord(firstID)
         if firstID in self.gamepadIds:
             for dev in self.gamepadIds:
                 # 6th byte is shape buttons
-                btn = ord(self.buf[((firstID - 1) * 8) + (dev * 8) + 5])
+                #btn = ord(self.buf[((firstID - 1) * 8) + (dev * 8) + 5])
+                btn = self.buf[((firstID - 1) * 8) + (dev * 8) + 5]
                 # Buttons 1 to 4:
                 self.eventState[dev][0] = -1 if self.eventState[dev][0] and not btn & 16 else btn & 16
                 self.eventState[dev][1] = -1 if self.eventState[dev][1] and not btn & 32 else btn & 32
@@ -106,7 +106,8 @@ class TwinUSB:
                 self.eventState[dev][3] = -1 if self.eventState[dev][3] and not btn & 128 else btn & 128
 
                 # Buttons 5 to 12:
-                btn = ord(self.buf[((firstID - 1) * 8) + (dev * 8) + 6])
+                # btn = ord(self.buf[((firstID - 1) * 8) + (dev * 8) + 6])
+                btn = self.buf[((firstID - 1) * 8) + (dev * 8) + 6]
                 self.eventState[dev][4] = -1 if self.eventState[dev][4] and not btn & 1 else btn & 1
                 self.eventState[dev][5] = -1 if self.eventState[dev][5] and not btn & 2 else btn & 2
                 self.eventState[dev][6] = -1 if self.eventState[dev][6] and not btn & 4 else btn & 4
@@ -119,14 +120,14 @@ class TwinUSB:
                 # Left stick (eventstate 14-15) (byte 3 = x 4 = y))
                 axisX = self.buf[((firstID - 1) * 8) + (dev * 8) + 3]
                 axisY = self.buf[((firstID - 1) * 8) + (dev * 8) + 4]
-                self.eventState[dev][12] = ord(axisX)
-                self.eventState[dev][13] = ord(axisY)
+                self.eventState[dev][12] = axisX
+                self.eventState[dev][13] = axisY
 
                 # Right stick (eventstate 12-13) (byte 1 = x 2 = y))
                 axisX = self.buf[((firstID - 1) * 8) + (dev * 8) + 1]
                 axisY = self.buf[((firstID - 1) * 8) + (dev * 8) + 2]
-                self.eventState[dev][14] = ord(axisX)
-                self.eventState[dev][15] = ord(axisY)
+                self.eventState[dev][14] = axisX
+                self.eventState[dev][15] = axisY
 
                 # D-pad (first 4 bits of byte 5 is the hat direction.
                 # value is 0 to 7 for the 8 directions starting from
@@ -135,7 +136,7 @@ class TwinUSB:
                 # the x and y hat axes.
 
                 # Mask off the last 4 bits
-                self.hatDir[dev] = ord(self.buf[((firstID - 1) * 8) + (dev * 8) + 5]) & 0xf
+                self.hatDir[dev] = (self.buf[((firstID - 1) * 8) + (dev * 8) + 5]) & 0xf
                 if self.hatDir[dev] == 15:
                     self.eventState[dev][16] = 0
                     self.eventState[dev][17] = 0
